@@ -3,9 +3,11 @@ Implementation of an algorithm to quickly calculate string similarity Gram Kerne
 
 ## Background
 Given a set of strings $S$ and an alphabet $A$, define the kernel function
+
 $$
 K_m(s_i, s_j) = \sum_{w:|w|=m} count(s_i, w)*count(s_j, w)
 $$
+
 Where $w$ is a word made from $A$ of length $m$ and $count(s_i, w)$ is the
 number of occurences of the substring $w$ in $s_i$ with overlaps.
 
@@ -71,7 +73,8 @@ In `bench/` there are two python implementations, one in `python_dfs.py` is the 
 Using a dataset of 4198 molecules (found in bench.words.txt), with an alphabet of 33 characters, the FSGM algorithm was compared with the Python implementation of FSGM and the standard matrix multiplication method. This was carried out on an Intel Core i7 CPU (4 cores) with 8GB of RAM.
 
 For values of $m$ larger than 5, the matrix multiplication method requested too much memory to complete, wheres both the C++ and Python FSGM implementations could compute the Kernel Matrix. 
-The C++ implementation of FGSM was faster than both other algorithms, and a bar chart plot below shows the compute times for increasing values of $m$. 
+The C++ implementation of FGSM was faster than both other algorithms, and a bar chart plot below shows the compute times for increasing values of $m$.
+
 ![bar chart](./bench/results.png)
 
 ### Dependencies:
