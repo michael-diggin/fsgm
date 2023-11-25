@@ -13,18 +13,19 @@ typedef std::vector<std::tuple<std::string, int>> word_count_vector;
 std::unordered_map<std::string, int_tuple_vector> visited;
 
 
-int count(std::string s, std::string w)
+int count(std::string_view s, std::string_view w)
 {
-   int occurrences = 0;
-   std::string::size_type pos = 0;
-   while ((pos = s.find(w, pos)) != std::string::npos) {
-          ++ occurrences;
-          pos += w.length();
-   }
-   return occurrences;
+    // TODO: replace with KMP algorithm
+    std::size_t count = 0;
+    std::size_t pos = s.find(w, 0 );
+    while ( pos != std::string_view::npos ) {
+        count += 1;
+        pos = s.find(w, pos+1 );
+    } 
+    return count;
 }
 
-bool hasSubString(std::string s, std::string w)
+bool hasSubString(std::string_view s, std::string_view w)
 {
     return s.find(w, 0) != std::string::npos;
 }

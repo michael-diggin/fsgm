@@ -33,3 +33,4 @@
 
 .vscode
 vendored/
+bench/__pycache__/

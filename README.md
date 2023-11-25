@@ -62,7 +62,17 @@ This issue is what has led to the algortihm in this repository.
 
 ## Implementation
 
-The algorithm detailed above is implemented in `src/kernelmatrix.cpp` in highly (un)optimized C++ with python bindings created as well. 
+The algorithm detailed above is implemented in `src/kernelmatrix.cpp` in highly (un)optimized C++ with python bindings created as well.
+
+## Benchmarks
+
+In `bench/` there are two python implementations, one in `python_dfs.py` is the same algorithm explained above jus tin Python. The other in `python_matrix.py` is a more traditional algorithm using matrix multiplication - it uses sparse matrices and also uses DFS to find non zero entries in the matrix $X_ij = count(s_i, w_j)$. 
+
+Using a dataset of 4198 molecules (found in bench.words.txt), with an alphabet of 33 characters, the FSGM algorithm was compared with the Python implementation of FSGM and the standard matrix multiplication method. This was carried out on an Intel Core i7 CPU (4 cores) with 8GB of RAM.
+
+For values of $m$ larger than 5, the matrix multiplication method requested too much memory to complete, wheres both the C++ and Python FSGM implementations could compute the Kernel Matrix. 
+The C++ implementation of FGSM was faster than both other algorithms, and a bar chart plot below shows the compute times for increasing values of $m$. 
+![bar chart](./bench/results.png)
 
 ### Dependencies:
 It requires the header files for [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) to be present in the include path.
