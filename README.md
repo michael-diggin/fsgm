@@ -11,11 +11,11 @@ $$
 Where $w$ is a word made from $A$ of length $m$ and $count(s_i, w)$ is the
 number of occurences of the substring $w$ in $s_i$ with overlaps.
 
-Then the Gram Kernel Matrix id defined as
+Then the Gram Kernel Matrix is defined as
 
 $G^m_{ij} = K_m(s_i, s_j)$
 
-This gets computationally very expensive as $m$ gets largers, since the search space $\{w \in A:|w|=m\}$ has $A^m$ elements. A very naive algorithm can take a huge amount of compute resoures, e.g.
+This gets computationally very expensive as $m$ gets larger, since the search space $\lbrace w \in A:|w|=m \rbrace$ has $A^m$ elements. A very naive algorithm can take a huge amount of compute resoures, e.g.
 ```python
 for i1, s1 in enumerate(S):
     for i2, s2 in enumerate(S):
@@ -23,20 +23,20 @@ for i1, s1 in enumerate(S):
             kernel[i1, i2] += count(s1, w)*count(s2, w)
 ```
 
-## Algortihmic details
-This repository hosts an alogirthm for computing the exact matrix $G^m_{ij}$ in a faster set of steps. It is currently implemented in C++ with plans to expose a Python wrapper on top of it.
+## Algortihm details
+This repository hosts an alogirthm for computing the exact matrix $G^m_{ij}$ in a faster set of steps and crucially, it does not require exponentially more compute resources as $m$ increases.
 
 It makes use of the fact that for larger $m$, the probability that, for a given $w$, $count(s_i, w) > 0$ is $len(s_i)/|A|^m$, which gets smaller as $m$ increases. 
 Secodly, it's clear that if $count(s, w) = 0$, then for any $a \in A$ we also have $count(s, w+a) = 0$. Thirdly $G$ is symmetric, so computing only the upper trainglur form is sufficient to compute all of $G$.
 
 Using these details, the algorithm can perform _depth first search_ for every $s_i \in S$ for every individual character $a \in A$. That is, it creates the set
-$$X_{i}^{a} = \{(w, count(s_i, w))\ |\ count(s_i, w) > 0,\ w\ starts\ with\ a,\ |w| = m\}$$
+$$X_{i}^{a} = \lbrace (w, count(s_i, w))\ |\ count(s_i, w) > 0,\ w\ starts\ with\ a,\ |w| = m \rbrace$$
 With DFS, words are built up starting from $a$ to words of length $m$. If at any point $count(s_i, w') = 0$ for $|w'| < m$, then all words with $w'$ as a prefix are ignored. 
 
 While iterating through the input strings and fetching the $X$ sets above, it also caches a lookup map of _visited_ substrings $w$ of length $m$ where a non zero count was found, storing both the string index and the count, i.e
 
 $$
-V_w = \{(j, count(s_j, w))\ |\ count(s_j, w) > 0,  |w| = m \}
+V_w = \lbrace (j, count(s_j, w))\ |\ count(s_j, w) > 0,  |w| = m \rbrace
 $$
 
 Now the algorithm can be described as follows:
