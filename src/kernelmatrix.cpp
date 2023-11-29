@@ -10,12 +10,11 @@ typedef std::vector<std::tuple<int,int>> int_tuple_vector;
 typedef std::vector<std::tuple<std::string, int>> word_count_vector;
 
 // visited is used as a map/cache
-std::unordered_map<std::string, int_tuple_vector> visited;
+std::unordered_map<std::string_view, int_tuple_vector> visited;
 
 
 int count(std::string_view s, std::string_view w)
 {
-    // TODO: replace with KMP algorithm
     std::size_t count = 0;
     std::size_t pos = s.find(w, 0 );
     while ( pos != std::string_view::npos ) {
@@ -32,16 +31,16 @@ bool hasSubString(std::string_view s, std::string_view w)
 
 
 
-void addToVisited(int index, std::string w, int c)
+void addToVisited(int index, std::string_view w, int c)
 {
     std::tuple<int, int> indexTupleCount(index, c);
     visited[w].push_back(indexTupleCount);
 }
 
-word_count_vector dfsAtWord(std::string s, std::string w, std::vector<std::string> chars, int m, int index)
+word_count_vector dfsAtWord(std::string_view s, std::string w, std::vector<std::string> chars, int m, int index)
 {
     word_count_vector output;
-    if (w.length() == m) {
+    if (static_cast<int>(w.length()) == m) {
         int c = count(s, w);
         if (c > 0) {
             addToVisited(index, w, c);
@@ -50,7 +49,7 @@ word_count_vector dfsAtWord(std::string s, std::string w, std::vector<std::strin
         }
     }
 
-    for (std::string c: chars) {
+    for (std::string c: chars) { 
         if (hasSubString(s, w+c)) {
             word_count_vector temp = dfsAtWord(s, w+c, chars, m, index);
             output.insert(output.end(), temp.begin(), temp.end());
@@ -69,16 +68,16 @@ Eigen::MatrixXi ComputeKernelSimilarityMatrix(std::vector<std::string> inputs, s
     Eigen::MatrixXi kernel = Eigen::MatrixXi::Zero(input_size, input_size);
 
     for (int i=0; i<input_size; i++) {
-        std::string s = inputs[i];
+        std::string_view s = inputs[i];
         for (std::string w : chars) {
             word_count_vector word_counts = dfsAtWord(s, w, chars, m, i);
             for (std::tuple<std::string, int> tup : word_counts) {
-                std:: string word = std::get<0>(tup);
+                std::string_view word_view = std::get<0>(tup);
                 int c1 = std::get<1>(tup);
-                for (std::tuple<int, int> index_counts : visited[word]) {
+                for (std::tuple<int, int> index_counts : visited[word_view]) {
                     int j = std::get<0>(index_counts);
                     int c2 = std::get<1>(index_counts);
-                    kernel(i, j) = kernel(i, j) + c1*c2;
+                    kernel(i, j) += c1*c2;
                 }
             }
         }
